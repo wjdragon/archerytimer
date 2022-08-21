@@ -10,6 +10,9 @@ void button_check(void)
 {
   long pressDuration;
 
+  //required ezButton debounce and state update of buttons.  Must be called first
+  btnColor.loop();
+  btnBright.loop();
   btnAlarm.loop();
   btnTimeAdd.loop();
   btnTimeMinus.loop();
@@ -17,12 +20,12 @@ void button_check(void)
   btnReset.loop();
 
   /* Check and act on alarm button */
-  if (btnAlarm.isPressed()) {
+  if (btnAlarm.isPressed()) {       //detects press of alarm
     btnAlarm.pressTime = millis();
     btnAlarm.isPressing = true;
     btnAlarm.isLongDetected = false;
   }
-  if (btnAlarm.isReleased()) {
+  if (btnAlarm.isReleased()) {      //detects release of alarm
     btnAlarm.isPressing = false;
     btnAlarm.releaseTime = millis();
     pressDuration = btnAlarm.releaseTime - btnAlarm.pressTime;
@@ -140,6 +143,48 @@ void button_check(void)
         btnTimeMinus.isLongDetected = true;
       }
     }
+    //color switcher button
+    if (btnColor.isPressed()) {
+      btnColor.pressTime = millis();
+      btnColor.isPressing = true;
+      btnColor.isLongDetected = false;
+    }
+    if (btnColor.isReleased()) {
+      btnColor.isPressing = false;
+      btnColor.releaseTime = millis();
+      pressDuration = btnColor.releaseTime - btnColor.pressTime;
+      if (pressDuration < SHORT_PRESS_TIME) {
+        cycleColor();
+      }
+    }
+    if (btnColor.isPressing && !btnColor.isLongDetected) {
+      pressDuration = millis() - btnColor.pressTime;
+      if (pressDuration > LONG_PRESS_TIME) {
+        btnColor.isLongDetected = true;
+      }
+    }
+
+    //brightness button
+    if (btnBright.isPressed()) {
+      btnBright.pressTime = millis();
+      btnBright.isPressing = true;
+      btnBright.isLongDetected = false;
+    }
+    if (btnBright.isReleased()) {
+      btnBright.isPressing = false;
+      btnBright.releaseTime = millis();
+      pressDuration = btnBright.releaseTime - btnBright.pressTime;
+      if (pressDuration < SHORT_PRESS_TIME) {
+        cycleBrightness();
+      }
+    }
+    if (btnBright.isPressing && !btnBright.isLongDetected) {
+      pressDuration = millis() - btnBright.pressTime;
+      if (pressDuration > LONG_PRESS_TIME) {
+        btnBright.isLongDetected = true;
+      }
+    }
+    
   }//End runStatus == STOPPED
 
   //Handle Reset button.  Reset state, display, kill alarm, etc
@@ -148,4 +193,22 @@ void button_check(void)
       showNumber(countdown);
       alarmCount = 0;
     }
+}
+
+//uses a predefined array of possibly RGB combinations to cycle through.  Defined in globals
+void cycleColor(void)
+{
+  palidx = (palidx + 1) % (sizeof(palette)/sizeof(palette[0]));
+  red = ((palette[palidx] & 0x4) >> 2) * DEFAULT_COLOR;
+  green = ((palette[palidx] & 0x2) >> 1) * DEFAULT_COLOR;
+  blue = ((palette[palidx] & 0x1)) * DEFAULT_COLOR;
+  showNumber(countdown);
+}
+
+//increases brightness until the max, then loops around.  Brightness changed by 20 each press
+void cycleBrightness(void)
+{
+  brightness = (brightness + 20) % 255;
+  FastLED.setBrightness(brightness);
+  showNumber(countdown);
 }

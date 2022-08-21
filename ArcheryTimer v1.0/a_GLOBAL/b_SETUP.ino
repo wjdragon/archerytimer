@@ -7,19 +7,14 @@ void setup() {
     for(;;); // Don't proceed, loop forever
   }
 
-  pinMode(segmentClock, OUTPUT);
-  pinMode(segmentData, OUTPUT);
-  pinMode(segmentLatch, OUTPUT);
   pinMode(alarmOutPin, OUTPUT);
 
+  btnColor.setDebounceTime(50);
+  btnBright.setDebounceTime(50);
   btnAlarm.setDebounceTime(50);
   btnTimeAdd.setDebounceTime(50);
   btnTimeMinus.setDebounceTime(50);
   btnStartStop.setDebounceTime(50);
-
-  digitalWrite(segmentClock, LOW);
-  digitalWrite(segmentData, LOW);
-  digitalWrite(segmentLatch, LOW);
 
   display.clearDisplay();         //Adafruit splash logo is in initial buffer,  Clear it.
   display.setCursor(0,0);
@@ -31,6 +26,9 @@ void setup() {
   centerText("Micah Ting");
   display.display();
   delay(2000);
+
+  FastLED.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(DEFAULT_BRIGHTNESS);
   
   showNumber(countdown);
 
