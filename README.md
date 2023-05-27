@@ -1,7 +1,7 @@
 # archerytimer
 Arduino-driven archery timer with buzzer
 
-This project runs an archery time using an arduino uno and a set of three 7-segment displays from Sparkfun.  
+This project runs an archery time using an arduino uno and a custom 7-segment LED display using WS8211 LEDs 
 
 Project Organization
 -----------------------------------
@@ -33,6 +33,16 @@ This project uses the following hardware:
 - PN2222A
 
 If using a short (less than 1 meter) run from the Arduino to LED board, the signal should be strong enough.  Anything longer and the signal will degrade.  For this project, we use a 30ft 8-wire cable to connect the controller box (Arduino) to the LED display panel.  However, the signal gets too weak and needs to be boosted.  See schematic
+
+To wire the seven segment display, please note that each segment takes 6 LEDs of the WS8211.  However, since one IC controls 3 LEDs, from the FastLED perspect it is two (2) LEDs per segment (physically, 6 are lit up).  To see how the 7-segment should be built withe the LED strip, look at the g_DISPLAY.ino file for comments on which segments are lit up.  A quick ASCII drawing below here is also provided.  Note that the wiring comes into the display from LEFT CENTER, loops around the figure, and exits RIGHT CENTER.
+
+```
+    3
+  4   2
+->  1  ->
+  5   7
+    6
+```
 
 ## Use
 +10/-10 seconds to adjust the time needed for one end
